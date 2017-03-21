@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/opt/lampp/htdocs/halo_home/package.json</file>
+            <file>file:/opt/lampp/htdocs/halo_home/common/userVariable.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/models/sendPushModel.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/common/language.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/routes/index.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/models/deviceModel.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/nbproject/private/private.xml</file>
+            <file>file:/opt/lampp/htdocs/halo_home/common/helper.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/app.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/controllers/deviceController.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/controllers/userController.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/lambda.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/models/userModel.js</file>
+            <file>file:/opt/lampp/htdocs/halo_home/controllers/cronjobController.js</file>
+        </group>
+    </open-files>
+</project-private>

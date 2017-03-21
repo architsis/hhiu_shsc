@@ -1,0 +1,1210 @@
+Index: common/helper.js
+===================================================================
+--- common/helper.js	(revision 52)
++++ common/helper.js	(working copy)
+@@ -70,7 +70,7 @@
+ 	+"<table width='100%' border='0' cellspacing='0' cellpadding='0'>"
+ 	+"<tbody><tr><td align='center' style='padding-top: 25px;' class='padding'>"
+ 	+"<table border='0' cellspacing='0' cellpadding='0' class='mobile-button-container'>"
+-	+"<tbody><tr><td align='center' style='border-radius: 3px; border-radius: 3px; padding: 17px 70px 20px 62px; color: white;background: lightgrey;letter-spacing: 8px; font-weight: 800;'>"+otp+"</td>"
++	+"<tbody><tr><td align='center' style='border-radius: 3px; border-radius: 3px; padding: 17px 70px 20px 62px; color: black;background: lightgrey;letter-spacing: 8px; font-weight: 800;'>"+otp+"</td>"
+         +"</tr></tbody></table></td></tr>"
+ 	+"</tbody></table></td></tr>"
+         +"<tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
+@@ -100,30 +100,78 @@
+             };
+     return response;
+ };
+-exports.mailNewUser = function (user_email, otp, link) {
++exports.mailNewUser = function (user_email, otp, link,network_name) {
+     var response =
+             {
+                 from: '"Halo_Home" <halohomeus@gmail.com>',
+                 to: user_email,
+-                subject: 'HHIU_SHSC | New User added',
++                subject: 'HALO HOME | New User added',
+                 text: 'You have recieved new mail',
+-                html: '<b>Hi You have been added in the network </b>' + '<br> Please use this otp <br>' + otp + '<br><a href=' + link + '>Please click here to verify your account</a>'
++                //html: '
++                html :"<html><head>"
++            	+"<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />"
++        	+"</head><body><div style='BACKGROUND-COLOR:#e8e8e8'>"
++		+"<table  style='background:url(http://127.0.0.1:3000/email/HALO_otp.png) no-repeat; background-size: cover;' border='0' cellspacing='0' cellpadding='0' width='100%'>"
++                +"<tbody><tr><td><table  border='0' cellspacing='0' cellpadding='0' width='700' align='center'>"
++		+"<tbody<tr><td  style='PADDING-LEFT:40px;PADDING-RIGHT:40px; PADDING-TOP:20px;  padding-bottom:20px;'>"
++		+"<table border='0' cellspacing='0' cellpadding='0' width='100%'>"
++	        +"</table></td></tr><tr><td style='PADDING-LEFT:40px;PADDING-RIGHT:40px; PADDING-TOP:90px; padding-bottom:20px; '>"
++	        +"</td></tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++	        +"<p style='LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;'><h2 style='font-style: italic; text-align:center;'>Hi You have been added in the "+network_name+" network </h2></p>"
+ 
++ +"<p style='LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;'><h2 style='font-style: italic; text-align:center;'>Please use your email and below given Otp to login in to your account </h2></p>"
+ 
+++"<table width='100%' border='0' cellspacing='0' cellpadding='0'>"
++	+"<tbody><tr><td align='center' style='padding-top: 25px;' class='padding'>"
++	+"<table border='0' cellspacing='0' cellpadding='0' class='mobile-button-container'>"
++	+"<tbody><tr><td align='center' style='border-radius: 3px; border-radius: 3px; padding: 17px 70px 20px 62px; color: black;background: lightgrey;letter-spacing: 8px; font-weight: 800;'>"+otp+"</td>"
++        +"</tr></tbody></table></td></tr>"
++	+"</tbody></table></td></tr>"
++
++		+"</td></tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++		+'<p style="LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;"><h2 style="font-style: italic; text-align:center;">'+user_email+'</h2></p></td>'
++                +"</tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++	        +"<p style='LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;'><h2 style='font-style: italic; text-align:center;'> </h2></p></td>"
++		+"</tr><tr><td style='PADDING-LEFT:40px;PADDING-RIGHT:40px;  ' valign='top'><p style='LINE-HEIGHT:20px; font-size:14px; font-family:Arial; color:black;'></b><h4  style='font-style: italic; text-align:center;'>Please click below to verify your account</h4> </p>"
++		+"</td></tr><tr><td align='center'><!-- BULLETPROOF BUTTON --><table width='100%' border='0' cellspacing='0' cellpadding='0'>"
++		+"<tbody><tr><td align='center' style='padding-top: 25px;' class='padding'>"
++	        +"<table border='0' cellspacing='0' cellpadding='0' class='mobile-button-container'>"
++	        +"<tbody><tr><td align='center' style='border-radius: 3px;' bgcolor='#256F9C'><a href="+link+" target='_blank' style='font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;' class='mobile-button'>Click Here →</a></td>"
++		+"</tr></tbody></table>"+"</td></tr></tbody></table>"
++	        +"<tr></tbody></table></td></tr></tbody></table></div></body></html>"
+             };
+     return response;
++
+ };
+ 
+-exports.mailExistingUser = function (user_email, link) {
++exports.mailExistingUser = function (user_email, link, network_name) {
+     var response =
+             {
+                 from: '"Halo_Home" <halohomeus@gmail.com>',
+                 to: user_email,
+-                subject: 'HHIU_SHSC | Account Activation Link',
++                subject: 'HALO HOME | Account Activation Link',
+                 text: 'You have recieved new mail',
+-                html: '<b>Hi </b>' + '<br><a href=' + link + '>Please click here to verify your account</a>'
+-
+-
++                html :"<html><head>"
++            	+"<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />"
++        	+"</head><body><div style='BACKGROUND-COLOR:#e8e8e8'>"
++		+"<table  style='background:url(http://127.0.0.1:3000/email/HALO_otp.png) no-repeat; background-size: cover;' border='0' cellspacing='0' cellpadding='0' width='100%'>"
++                +"<tbody><tr><td><table  border='0' cellspacing='0' cellpadding='0' width='700' align='center'>"
++		+"<tbody<tr><td  style='PADDING-LEFT:40px;PADDING-RIGHT:40px; PADDING-TOP:20px;  padding-bottom:20px;'>"
++		+"<table border='0' cellspacing='0' cellpadding='0' width='100%'>"
++	        +"</table></td></tr><tr><td style='PADDING-LEFT:40px;PADDING-RIGHT:40px; PADDING-TOP:90px; padding-bottom:20px; '>"
++	        +"</td></tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++	        +"<p style='LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;'><h2 style='font-style: italic; text-align:center;'>Hi You have been added in the "+network_name+" network </h2></p>"
++                +"</td></tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++		+'<p style="LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;"><h2 style="font-style: italic; text-align:center;">'+user_email+'</h2></p></td>'
++                +"</tr><tr><td  style='PADDING-BOTTOM:1px;PADDING-LEFT:40px;PADDING-RIGHT:40px; '>"
++	        +"<p style='LINE-HEIGHT:20px;COLOR:#333;FONT-SIZE:13px;FONT-FAMILY:Arial; margin-top:11px; text-align:justify;color:#032a4b;'><h2 style='font-style: italic; text-align:center;'> </h2></p></td>"
++		+"</tr><tr><td style='PADDING-LEFT:40px;PADDING-RIGHT:40px;  ' valign='top'><p style='LINE-HEIGHT:20px; font-size:14px; font-family:Arial; color:black;'></b><h4  style='font-style: italic; text-align:center;'>Please click below to verify your account</h4> </p>"
++		+"</td></tr><tr><td align='center'><!-- BULLETPROOF BUTTON --><table width='100%' border='0' cellspacing='0' cellpadding='0'>"
++		+"<tbody><tr><td align='center' style='padding-top: 25px;' class='padding'>"
++	        +"<table border='0' cellspacing='0' cellpadding='0' class='mobile-button-container'>"
++	        +"<tbody><tr><td align='center' style='border-radius: 3px;' bgcolor='#256F9C'><a href="+link+" target='_blank' style='font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; border-radius: 3px; padding: 15px 25px; border: 1px solid #256F9C; display: inline-block;' class='mobile-button'>Click Here →</a></td>"
++		+"</tr></tbody></table>"+"</td></tr></tbody></table>"
++	        +"<tr></tbody></table></td></tr></tbody></table></div></body></html>"
+             };
+     return response;
+ };
+Index: common/language.js
+===================================================================
+--- common/language.js	(revision 52)
++++ common/language.js	(working copy)
+@@ -81,6 +81,34 @@
+             var response = "Your OTP has expired";
+             return response;
+             break;
++        case "21":
++            var response = "Invalid OTP";
++            return response;
++            break;
++        case "22":
++            var response = "You dont have permission to add the device";
++            return response;
++            break;
++        case "23":
++            var response = "Device  is already added in your network";
++            return response;
++            break;
++        case "24":
++            var response = "Device is already added in any other network";
++            return response;
++            break;
++        case "25":
++            var response = "You have the permission to add the device";
++            return response;
++            break;
++        case "26":
++            var response = "limit of 8 users per netework has already been achieved.Please delete existing users for further addition";
++            return response;
++            break;
++        case "27":
++            var response = "limit of 4 admins per netework has already been achieved.Please delete existing admins for further addition";
++            return response;
++            break;
+     }
+ 
+ 
+Index: config.js
+===================================================================
+--- config.js	(revision 52)
++++ config.js	(working copy)
+@@ -1,15 +1,17 @@
+ module.exports.arr = {
+   'db_name': 'halo_home',
+   'db_username': 'root',
+-  'db_password': 'halohome123'
++  'db_password': ''
+ };
+ 
+-exports.static_path = "public";
+-exports.base_url = '35.160.90.159';
+-module.exports.host = 'a1q7ahhrnci7yt.iot.us-west-2.amazonaws.com';
+-module.exports.secretAccessKey = 'jr4WOB1JkgNvDYONgUpFrmt2K3cdBfDPw8mCkgT3';
++
++module.exports.base_url = '127.0.0.1';
++module.exports.static_path = "public";
+ module.exports.region = 'us-west-2';
+-module.exports.accessKeyId = 'AKIAIOOZ4OC2NL5RLV2A';
++module.exports.secretAccessKey = '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';
++module.exports.accessKeyId = 'AKIAIOKZOEGS4OB3LORQ';
+ module.exports.secret = '8oeQozTEDLDHcPJxXZpPCFgawqzFgXOEkpY52LOADt79yDVZ8qRoFyvb-8V_4MLP';
++module.exports.host = 'a1q7ahhrnci7yt.iot.us-west-2.amazonaws.com';
+ module.exports.timestamp_hours = '86400000';
+ 
++
+Index: controllers/deviceController.js
+===================================================================
+--- controllers/deviceController.js	(revision 43)
++++ controllers/deviceController.js	(working copy)
+@@ -32,8 +32,7 @@
+                     var message = language.getResponse(resp_code);
+                     var response = helper.sendResult(status, message);
+                     res.send(response);
+-                }
+-                else {
++                } else {
+                     var date = new Date();
+                     deviceModel.fetchingDetails(user_id, function (result) {
+                         if (result.length > 0) {
+@@ -80,8 +79,7 @@
+                                     });
+                                 }
+                             });
+-                        }
+-                        else {
++                        } else {
+                             var status = false;
+                             var resp_code = "9";
+                             var message = language.getResponse(resp_code);
+@@ -92,8 +90,7 @@
+                 }
+ 
+             });
+-        }
+-        else {
++        } else {
+             var status = false;
+             var resp_code = "10";
+             var message = language.getResponse(resp_code);
+@@ -144,7 +141,7 @@
+                         device_active_mode: device_default_mode,
+                         device_active_status: "1"
+                     };
+-                    deviceModel.vaildateDeviceMac(device_mac,serial_no, function (response) {
++                    deviceModel.vaildateDeviceMac(device_mac, serial_no, function (response) {
+                         if (response.length > 0) {
+                             var status = false;
+                             var resp_code = "17";
+@@ -169,8 +166,7 @@
+                     });
+                 }
+             });
+-        }
+-        else {
++        } else {
+             var status = false;
+             var resp_code = "10";
+             var message = language.getResponse(resp_code);
+@@ -242,3 +238,83 @@
+ 
+     res.send(response);
+ };
++
++exports.checkUserDeviceAuthorisation = function (req, res) {
++
++
++    
++    var serial_no = req.body.serial_no;
++    var user_token = req.body.user_token;
++    var network_token = req.body.network_token;
++    var auth_token = req.headers.authorization;
++
++    deviceModel.checkTokenExist(auth_token, function (response) {
++        if (response == 0) {
++
++            var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
++                if (err) {
++                    var status = false;
++                    var resp_code = "10";
++                    var message = language.getResponse(resp_code);
++                    var response = helper.sendResult(status, message);
++                    res.send(response);
++                } else {
++
++                    deviceModel.checkRole(user_token, network_token, function (response) {
++
++                        if (response[0].user_role == "a" || response[0].user_role == "sa") {
++
++                            deviceModel.checkSerialNo(serial_no, function (result) {
++                                if (result.length > 0) {
++                                    if (result[0].network_token == network_token) {
++                                        var status = true;
++                                        var resp_code = "23";
++                                        var message = language.getResponse(resp_code);
++                                        var response = helper.sendResult(status, message);
++                                        res.send(response);
++                                    } else {
++                                        var status = false;
++                                        var resp_code = "24";
++                                        var message = language.getResponse(resp_code);
++                                        var response = helper.sendResult(status, message);
++                                        res.send(response);
++                                    }
++
++
++
++                                } else {
++                                    var status = true;
++                                    var resp_code = "25";
++                                    var message = language.getResponse(resp_code);
++                                    var response = helper.sendResult(status, message);
++                                    res.send(response);
++
++                                }
++
++
++                            });
++
++                        } else {
++
++                            var status = false;
++                            var resp_code = "22";
++                            var message = language.getResponse(resp_code);
++                            var response = helper.sendResult(status, message);
++                            res.send(response);
++
++                        }
++                    });
++
++
++                }
++
++            });
++        } else {
++            var status = false;
++            var resp_code = "10";
++            var message = language.getResponse(resp_code);
++            var response = helper.sendResult(status, message);
++            res.send(response);
++        }
++    });
++};
+\ No newline at end of file
+Index: controllers/userController.js
+===================================================================
+--- controllers/userController.js	(revision 52)
++++ controllers/userController.js	(working copy)
+@@ -11,10 +11,11 @@
+ var language = require('../common/language');
+ 
+ 
++
+ /********************************************************************************
+  ** Function            : login
+  ** Description         : With this Api user can login into his/her account
+- ** Input Parameters    : (email,password) or (email,otp)
++ ** Input Parameters    : (email,password)
+  ** Return Values       : status:-{True},data:-{"status":true,
+  *                        "data":{"user_token","user_otp"
+  *                        ,"otp_status" "userName","userPic","token"}
+@@ -27,6 +28,84 @@
+     var data = req.body;
+     var user_email = req.body.user_email;
+     var user_password = req.body.user_pwd;
++
++    userModel.validateEmail(user_email, function (emailResponse) {
++        if (emailResponse.length > 0) {
++            userModel.checkUserStatus(user_email, function (userResponse) {
++                if (userResponse[0].user_account_status === 0) {
++                    var status = false;
++                    var resp_code = "1";
++                    var message = language.getResponse(resp_code);
++                    var result = helper.sendResult(status, message);
++                    res.send(result);
++                } else {
++                    userModel.validateLogin(data, function (loginResponse) {
++                        if (loginResponse.length > 0) {
++                            var authToken = helper.generateToken(loginResponse);
++                            if (loginResponse[0].otp_status == 0) {
++                                var status = true;
++                                var data = {
++                                    user_token: loginResponse[0].user_token,
++                                    user_id: loginResponse[0].user_id,
++                                    user_otp: loginResponse[0].user_otp,
++                                    otp_status: 0,
++                                    userName: loginResponse[0].user_first_name,
++                                    userPic: loginResponse[0].user_pic,
++                                    token: authToken
++                                };
++                                var result = helper.sendResult(status, data);
++                                res.send(result);
++                            } else if (loginResponse[0].otp_status == 2) {
++                                var status = true;
++                                var data = {
++                                    user_token: loginResponse[0].user_token,
++                                    user_id: loginResponse[0].user_id,
++                                    user_otp: loginResponse[0].user_otp,
++                                    otp_status: 1,
++                                    userName: loginResponse[0].user_first_name,
++                                    userPic: loginResponse[0].user_pic,
++                                    token: authToken
++                                };
++                                var result = helper.sendResult(status, data);
++                                res.send(result);
++                            }
++
++                        } else {
++                            var status = false;
++                            var resp_code = "2";
++                            var message = language.getResponse(resp_code);
++                            var result = helper.sendResult(status, message);
++                            res.send(result);
++                        }
++                    });
++                }
++            });
++        } else {
++            var status = false;
++            var resp_code = "3";
++            var message = language.getResponse(resp_code);
++            var result = helper.sendResult(status, message);
++            res.send(result);
++        }
++    });
++};
++
++/********************************************************************************
++ ** Function            : otpLogin
++ ** Description         : With this Api user can login into his/her account
++ ** Input Parameters    : (email,otp)
++ ** Return Values       : status:-{True},data:-{"status":true,
++ *                        "data":{"user_token","user_otp"
++ *                        ,"otp_status" "userName","userPic","token"}
++ *                        stattus:-{false},data:{Otp Expired,Invalid Otp
++ *                        You are not a member of Halo Network.Please Sign up to continue.}
++ ********************************************************************************/
++
++exports.otpLogin = function (req, res) {
++
++    var data = req.body;
++    var user_email = req.body.user_email;
++    var user_password = req.body.user_pwd;
+     var date = new Date();
+     var timestamp = date.getTime();
+     userModel.validateEmail(user_email, function (emailResponse) {
+@@ -39,19 +118,19 @@
+                     var result = helper.sendResult(status, message);
+                     res.send(result);
+                 } else {
+-                    userModel.validateLogin(data, function (loginResponse) {
++                    userModel.validateOtpLogin(data, function (loginResponse) {
+                         if (loginResponse.length > 0) {
+                             var authToken = helper.generateToken(loginResponse);
+                             var status = true;
+                             var otp_timestamp = loginResponse[0].otp_sent_timestamp;
+                             var difference_time = timestamp - otp_timestamp;
+-                            var otp_status = loginResponse[0].otp_status;
+-                            if ((difference_time <= config.timestamp_hours && otp_status === 1) || (otp_status === 0)) {
++
++                            if (difference_time <= config.timestamp_hours) {
+                                 var data = {
+                                     user_token: loginResponse[0].user_token,
+                                     user_id: loginResponse[0].user_id,
+                                     user_otp: loginResponse[0].user_otp,
+-                                    otp_status: loginResponse[0].otp_status,
++                                    otp_status: 1,
+                                     userName: loginResponse[0].user_first_name,
+                                     userPic: loginResponse[0].user_pic,
+                                     token: authToken
+@@ -67,7 +146,7 @@
+                             }
+                         } else {
+                             var status = false;
+-                            var resp_code = "2";
++                            var resp_code = "21";
+                             var message = language.getResponse(resp_code);
+                             var result = helper.sendResult(status, message);
+                             res.send(result);
+@@ -86,6 +165,7 @@
+ };
+ 
+ 
++
+ /********************************************************************************
+  ** Function            : register
+  ** Description         : With this Api user can signup
+@@ -101,7 +181,6 @@
+         var user_fname = fields.fname;
+         var user_lname = fields.lname;
+         var user_password = fields.password;
+-
+         if (files.hasOwnProperty('pic')) {
+             var user_pic = files.pic.path;
+             var pic_type = files.pic.type.substring(6);
+@@ -108,7 +187,7 @@
+         }
+         userModel.validateEmail(user_email, function (emailResponse) {
+             if (emailResponse.length > 0) {
+-                var status = true;
++                var status = false;
+                 var resp_code = "4";
+                 var message = language.getResponse(resp_code);
+                 var response = helper.sendResult(status, message);
+@@ -117,7 +196,6 @@
+                 var encrypted_passowrd = helper.encrypt(user_password);
+                 var date = new Date();
+                 var timestamp = date.getTime();
+-                var user_role = 'sa';
+                 var set_data = {
+                     user_first_name: user_fname,
+                     user_last_name: user_lname,
+@@ -124,7 +202,6 @@
+                     user_email: user_email,
+                     user_password: encrypted_passowrd,
+                     user_account_status: 0,
+-                    user_role: user_role,
+                     user_updated_on: timestamp
+                 };
+ 
+@@ -203,11 +280,9 @@
+             var date = new Date();
+             var timestamp = date.getTime();
+             var user_otp = helper.randomOtp();
+-            var otp_status = "1";
+             var update_data = {
+                 user_otp: user_otp,
+-                otp_sent_timestamp: timestamp,
+-                otp_status: otp_status
++                otp_sent_timestamp: timestamp
+             };
+ 
+             //update details with otp ,otpstatus,timestamp
+@@ -280,7 +355,7 @@
+                                 res.send(response);
+                             });
+                         } else {
+-                            var status = true;
++                            var status = false;
+                             var resp_code = "9";
+                             var message = language.getResponse(resp_code);
+                             var response = helper.sendResult(status, message);
+@@ -311,14 +386,10 @@
+ exports.addUser = function (req, res) {
+ 
+     var user_id = req.body.user_id;
+-    var role = req.body.role;
++    var user_email = req.body.user_email;
+     var auth_token = req.headers.authorization;
+     var network_token = req.body.network_token;
+-    var network_id = req.body.network_id;
+-    var date = new Date();
+-    var timestamp = date.getTime();
+-    var permission_devices = req.body.devices;
+-
++    var user_role = req.body.user_role;
+     deviceModel.checkTokenExist(auth_token, function (response) {
+         if (response === 0) {
+             var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
+@@ -329,98 +400,122 @@
+                     var response = helper.sendResult(status, message);
+                     res.send(response);
+                 } else {
+-                    var user_email = req.body.email;
+-                    //will check whether this user is already added in this network or not if yes
+-                    //we only specify its role in role table or if not we have to add user in a user table
+-                    //as well as in role table.
+-                    userModel.validateEmail(user_email, function (response) {
++
++                    userModel.getUserTokenUserTable(user_id, function (response) {
+                         if (response.length > 0) {
+-                            userModel.getUserTokenUserTable(user_id, function (response) {
++                            var user_token_admin = response[0].user_token;
++                            userModel.countUserRole(user_role, network_token, function (response) {
++                                
++                                if (user_role == "u" && response[0].role <= "8" || user_role == "a" && response[0].role <= "4") {
++                                    //Check whether the user is already present in Halo network 
++                                    userModel.validateEmail(user_email, function (response) {
++                                        if (response.length > 0) {
++                                            userModel.checkNetworkTokenAlreadyExist(network_token, function (response) {
++                                                if (response.length > 0) {
++                                                    // if nw token exists get user token of the user from user_table
++                                                    userModel.getUserTokenUserTable(user_email, function (response) {
++                                                        var user_token = response[0].user_token;
+ 
+-                                var user_token_admin = response[0].user_token;
++                                                        // Check if user is already added in this network
++                                                        userModel.checkNetworkUser(network_token, user_token, function (response) {
++                                                            if (response.length > 0) {
++                                                                var status = false;
++                                                                var resp_code = "11";
++                                                                var message = language.getResponse(resp_code);
++                                                                var response = helper.sendResult(status, message);
++                                                                res.send(response);
++                                                            } else {
+ 
+-                                userModel.checkNetworkTokenAlreadyExist(network_token, function (response) {
+-                                    if (response.length > 0) {
+-                                        // if nw token exists get user token of the user from user_table
+-                                        userModel.getUserTokenUserTable(user_email, function (response) {
+-                                            var user_token = response[0].user_token;
++                                                                var token = {
++                                                                    user_token: user_token,
++                                                                    admin_token: user_token_admin,
++                                                                    otp: 0
++                                                                };
+ 
+-                                            // if both usertoken and network token exists of the same pattern
+-                                            userModel.checkNetworkUser(network_token, user_token, function (response) {
+-                                                if (response.length > 0) {
+-                                                    var status = true;
+-                                                    var resp_code = "11";
++                                                                var new_user = addUserRole(req, res, token);
++
++
++                                                            }
++                                                        });
++                                                    });
++                                                } else {
++                                                    var status = false;
++                                                    var resp_code = "13";
+                                                     var message = language.getResponse(resp_code);
+                                                     var response = helper.sendResult(status, message);
+                                                     res.send(response);
+-                                                } else {
++                                                }
++                                            });
+ 
+-                                                    //if user is already added and its role in user_role table
+-                                                    var user_role_data = {
++                                        } else {
++                                            var otp = helper.randomOtp();
++                                            var otp_string = otp.toString();
++                                            var encrypt_password = helper.encrypt(otp_string);
++                                            var random = helper.randomNumber();
++                                            var date = new Date();
++                                            var timestamp = date.getTime();
++                                            var set_data = {
++                                                user_first_name: "",
++                                                user_last_name: "",
++                                                user_email: user_email,
++                                                user_account_status: 0,
++                                                user_updated_on: timestamp,
++                                                user_password: encrypt_password,
++                                                user_created_by: user_token_admin,
++                                                otp_status: 2,
++                                                otp_sent_timestamp: timestamp
++                                            };
++                                            userModel.insertingDetails(set_data, function (id) {
++                                                var user_id = id;
++                                                var user_role = "hh";
++                                                var user_token = user_role + '_' + user_id + '_' + random;
++                                                var update_pic = {
++                                                    user_token: user_token,
++                                                };
++
++                                                // updating user detail with the user_token
++                                                userModel.updateUserToken(user_id, update_pic, function (result) {
++                                                    var token = {
+                                                         user_token: user_token,
+-                                                        user_role: role,
+-                                                        network_token: network_token,
+-                                                        user_created_on: timestamp,
+-                                                        network_id_fk: network_id
++                                                        admin_token: user_token_admin,
++                                                        otp: otp
+                                                     };
+-                                                    userModel.updateUserRole(user_role_data, function (result) {
+-                                                        var mailoption = helper.options;
+-                                                        var transporter = nodemailer.createTransport(mailoption);
+-                                                        var encrypted_token = helper.encrypt(user_token);
+-                                                        var encrypted_nw_token = helper.encrypt(network_token);
+-                                                        var link = "http://" + req.get('host') + "/user-activation?token=" + encrypted_token + "&nw_token=" + encrypted_nw_token;
+-                                                        var mailsetting = helper.mailExistingUser(user_email, link);
+ 
++                                                    var new_user = addUserRole(req, res, token);
++//                                    if (new_user) {
++//                                        var status = true;
++//                                        var resp_code = "14";
++//                                        var message = language.getResponse(resp_code);
++//                                        var response = helper.sendResult(status, message);
++//                                        res.send(response);
++//                                    }
+ 
+-                                                        for (var i = 0; i < permission_devices.length; i++) {
+-                                                            var device_permission_data = {
+-                                                                created_on: timestamp,
+-                                                                permission_givento: user_token,
+-                                                                permission_givenby: user_token_admin,
+-                                                                device_token_fk: permission_devices[i],
+-                                                                network_token_fk: network_token
+-                                                            };
++                                                });
++                                            });
++                                        }
++                                    });
+ 
+-                                                            userModel.insertDeviceAccessPermission(device_permission_data, function (result) {
+-                                                                console.log(result);
+-                                                            });
+-                                                        }
+-                                                        // sending mail to the user with otp
+-                                                        transporter.sendMail(mailsetting, function (error, info) {
+-                                                            if (error) {
+-                                                                return console.log(error);
+-                                                            } else {
+-                                                                var status = true;
+-                                                                var resp_code = "12";
+-                                                                var message = language.getResponse(resp_code);
+-                                                                var response = helper.sendResult(status, message);
+-                                                                res.send(response);
+-                                                            }
+-                                                        });
+-
+-                                                    });
+-
+-                                                }
+-                                            });
+-                                        });
++                                } else {
++                                    var status = false;
++                                    if (user_role == "u") {
++                                        var resp_code = "26";
+                                     } else {
+-                                        var status = false;
+-                                        var resp_code = "13";
+-                                        var message = language.getResponse(resp_code);
+-                                        var response = helper.sendResult(status, message);
+-                                        res.send(response);
++                                        var resp_code = "27";
+                                     }
+-                                });
++                                    var message = language.getResponse(resp_code);
++                                    var response = helper.sendResult(status, message);
++                                    res.send(response);
++                                }
+                             });
+                         } else {
+-
+-                            var new_user = addNewUser(req.body, req, res);
++                            var status = false;
++                            var resp_code = "9";
++                            var message = language.getResponse(resp_code);
++                            var response = helper.sendResult(status, message);
++                            res.send(response);
+                         }
+-
+                     });
+-
+                 }
+-
+             });
+         } else {
+             var status = false;
+@@ -429,9 +524,11 @@
+             var response = helper.sendResult(status, message);
+             res.send(response);
+         }
++
+     });
+ 
+ };
++
+ /********************************************************************************
+  ** Function            : userActivation
+  ** Description         : With this Api user can activate his/her account
+@@ -440,22 +537,23 @@
+  ********************************************************************************/
+ 
+ exports.userActivation = function (req, res) {
+-    var encrypt_token = req.query.token;
+-    var token = helper.decrypt(encrypt_token);
+-    var encrypt_nw_token = req.query.nw_token;
+-    var nw_token = helper.decrypt(encrypt_nw_token);
++
++    var encrypt_token = req.params.id;
++    var string = helper.decrypt(encrypt_token);
++    var arr = string.split(":");
++    var token = arr[0];
++    var nw_token = arr[1];
+     userModel.checkTokenExist(token, function (result) {
+         var user_token = result[0].user_token;
+         if (user_token) {
+             userModel.activeUserStatus(token, function (result_user) {
+                 userModel.activeNetworkStatus(token, nw_token, function (result_network) {
+-                    var message = "Your account has been activated.Please login in the app to continue.";
+-                    res.send(message);
++                    res.sendfile(config.static_path + '/email' + '/user_network_status_halo.html');
+ 
+                 });
+             });
+         } else {
+-            var status = true;
++            var status = false;
+             var resp_code = "3";
+             var message = language.getResponse(resp_code);
+             var response = helper.sendResult(status, message);
+@@ -539,7 +637,7 @@
+                                                         network_name: network_name,
+                                                         network_id: network_id,
+                                                         user_role: user_role,
+-                                                       devices: []
++                                                        devices: []
+                                                     };
+                                                 } else {
+                                                     sub_array = {
+@@ -565,7 +663,7 @@
+                                     var response = helper.sendResult(status, master_array);
+                                     res.send(response);
+                                 } else {
+-                                    var status = true;
++                                    var status = false;
+                                     var resp_code = "13";
+                                     var message = language.getResponse(resp_code);
+                                     var response = helper.sendResult(status, message);
+@@ -573,7 +671,7 @@
+                                 }
+                             });
+                         } else {
+-                            var status = true;
++                            var status = false;
+                             var resp_code = "9";
+                             var message = language.getResponse(resp_code);
+                             var response = helper.sendResult(status, message);
+@@ -676,11 +774,11 @@
+     userModel.validateEmail(user_email, function (result) {
+         if (result.length > 0) {
+             var user_email = result[0].user_email;
+-            userModel.activeUserStatus(user_email, function (result_user) {
++            userModel.activeUserAccount(user_email, function (result_user) {
+                 res.sendfile(config.static_path + '/email' + '/otp_halo.html');
+             });
+         } else {
+-            var status = true;
++            var status = false;
+             var resp_code = "3";
+             var message = language.getResponse(resp_code);
+             res.send(message);
+@@ -708,93 +806,80 @@
+ };
+ 
+ 
+-function addNewUser(user_details, req, res) {
++addUserRole = function (req, res, token) {
+ 
+-    var user_id = user_details.user_id;
+-    var user_fname = user_details.fname;
+-    var user_lname = user_details.lname;
+     var random = helper.randomNumber();
+-    var network_token = user_details.network_token;
+-    var role = user_details.role;
+-    var permission_devices = user_details.devices;
+-    var user_email = user_details.email;
++    var user_token = token.user_token;
++    var admin_token = token.admin_token;
++    var otp = token.otp;
++    var network_token = req.body.network_token;
++    var network_name = req.body.network_name;
++    var role = req.body.user_role;
++    var permission_devices = req.body.devices;
++    var user_email = req.body.user_email;
+     var date = new Date();
+     var timestamp = date.getTime();
+-    var network_id = user_details.network_id;
++    var network_id = req.body.network_id;
++    var master_array = [];
+ 
++    var role_data = {
++        user_token: user_token,
++        user_role: role,
++        network_token: network_token,
++        user_created_on: timestamp,
++        user_network_status: 0,
++        network_id_fk: network_id
++    };
+ 
+-    //fetching user token with the help of user_id
+-    userModel.getUserTokenUserTable(user_id, function (response) {
+-        var otp = helper.randomOtp();
++    userModel.updateUserRole(role_data, function (result) {
++        var mailoption = helper.options;
++        var transporter = nodemailer.createTransport(mailoption);
++        var enc_token = user_token + ":" + network_token;
++        var encrypted_token = helper.encrypt(enc_token);
++        var link = "http://" + req.get('host') + "/user-activation/" + encrypted_token;
++        if (otp) {
++            var mailsetting = helper.mailNewUser(user_email, otp, link, network_name);
++            var resp_code = "14";
++        } else {
++            var mailsetting = helper.mailExistingUser(user_email, link, network_name);
++            var resp_code = "12";
++        }
+ 
+-        // inserting userinfo in user table
+-        var set_data = {
+-            user_first_name: user_fname,
+-            user_last_name: user_lname,
+-            user_email: user_email,
+-            user_account_status: 0,
+-            user_updated_on: timestamp,
+-            user_otp: otp,
+-            user_created_by: response[0].user_token
+-        };
+-        userModel.insertingDetails(set_data, function (id) {
+-            var user_id = id;
+-            var user_role = "hh";
+-            user_token = user_role + '_' + user_id + '_' + random;
+-            var token = {
+-                user_token: user_token
+-            };
++        if (role === "u") {
+ 
+-            //updating user table with user
+-            userModel.updateUserToken(user_id, token, function (result) {
+-                var role_data = {
+-                    user_token: user_token, 
+-                    user_role: role,
+-                    network_token: network_token,
+-                    user_created_on: timestamp,
+-                    network_id_fk: network_id
+-                };
+-                userModel.updateUserRole(role_data, function (result) {
+-                    var mailoption = helper.options;
+-                    var transporter = nodemailer.createTransport(mailoption);
+-                    var encrypted_token = helper.encrypt(user_token);
+-                    var encrypted_nw_token = helper.encrypt(network_token);
++            for (var i = 0; i < permission_devices.length; i++) {
++                var device_token_fk = permission_devices[i];
++                var device_array = [
++                    device_token_fk,
++                    user_token,
++                    admin_token,
++                    timestamp,
++                    network_token
++                ];
+ 
+-                    var link = "http://" + req.get('host') + "/user-activation?token=" + encrypted_token + "&nw_token=" + encrypted_nw_token;
+-                    var mailsetting = helper.mailNewUser(user_email, otp, link);
++                master_array.push(device_array);
+ 
+-                    if (role === "u") {
+-                        for (var i = 0; i < permission_devices.length; i++) {
+-                            var device_permission_data = {
+-                                created_on: timestamp,
+-                                permission_givento: user_token,
+-                                permission_givenby: response[0].user_token,
+-                                device_token_fk: permission_devices[i],
+-                                network_token_fk: network_token
+-                            };
++            }
++            userModel.insertDeviceAccessPermission(master_array, function (result) {
+ 
+-                            userModel.insertDeviceAccessPermission(device_permission_data, function (result) {
++            });
++        }
++        // sending mail to the user
++        transporter.sendMail(mailsetting, function (error, info) {
++            if (error) {
++                console.log(error);
++            } else {
++                console.log(info);
++                var status = true;
++                var message = language.getResponse(resp_code);
++                var response = helper.sendResult(status, message);
++                res.send(response);
+ 
+-                            });
+-                        }
+-                    }
+-                    // sending mail to the user with otp
+-                    transporter.sendMail(mailsetting, function (error, info) {
+-                        if (error) {
+-                            return console.log(error);
+-                        } else {
+-                            var status = true;
+-                            var resp_code = "14";
+-                            var message = language.getResponse(resp_code);
+-                            var response = helper.sendResult(status, message);
+-                            res.send(response);
+-                        }
+-                    });
++            }
++        });
+ 
+-                });
+-            });
+-        });
+     });
+-}
+ 
++};
+ 
++
+Index: models/deviceModel.js
+===================================================================
+--- models/deviceModel.js	(revision 43)
++++ models/deviceModel.js	(working copy)
+@@ -191,4 +191,44 @@
+         }
+ 
+     });
++};
++
++
++/********************************************************************************
++ ** Function            : checkRole
++ ** Description         : This function will return the user role with the help of user_token and network_token 
++ ********************************************************************************/
++
++
++
++exports.checkRole = function (user_token, network_token , callback) {
++  
++    connection.query('SELECT user_role from halo_user_role_in_network where user_token = ? AND network_token = ?', [user_token,network_token], function (err, rows, fields) {
++        if (err) {
++            console.log(err);
++        } else {
++          
++            callback(rows);
++            
++        }
++    });
++};
++
++
++/********************************************************************************
++ ** Function            : checkSerialNo
++ ** Description         : This function will check the serial no  whether its exists or not
++ ********************************************************************************/
++
++
++
++exports.checkSerialNo = function (serial_no, callback) {
++   
++    connection.query('SELECT * from halo_device where device_serial_no = ?', [serial_no], function (err, rows, fields) {
++        if (err) {
++            console.log(err);
++        } else {
++            callback(rows);
++        }
++    });
+ };
+\ No newline at end of file
+Index: models/userModel.js
+===================================================================
+--- models/userModel.js	(revision 52)
++++ models/userModel.js	(working copy)
+@@ -34,7 +34,7 @@
+ /********************************************************************************
+  ** Function            : validateLogin
+  ** Description         : This function return user  information with
+- *                        the help of user_password or user_otp
++ *                        the help of user_password 
+  ********************************************************************************/
+ 
+ exports.validateLogin = function (req, callback) {
+@@ -42,7 +42,7 @@
+     var encrypted_password = helper.encrypt(user_password);
+     var user_email = req.user_email;
+       
+-    var con = connection.query('SELECT * from halo_user where (user_email = ? and user_password = ? ) OR (user_email = ? and user_otp = ? )', [user_email, encrypted_password, user_email, user_password], function (err, rows, fields) {
++    var con = connection.query('SELECT * from halo_user where user_email = ? and user_password = ?', [user_email, encrypted_password], function (err, rows, fields) {
+         if (err) {
+             console.log(err);
+         } else {
+@@ -51,6 +51,25 @@
+     });
+ };
+ 
++/********************************************************************************
++ ** Function            : validateOtpLogin
++ ** Description         : This function return user  information with
++ *                        the help of user_otp
++ ********************************************************************************/
++
++exports.validateOtpLogin = function (req, callback) {
++    var user_password = req.user_pwd;
++    var user_email = req.user_email;
++      
++    var con = connection.query('SELECT * from halo_user where user_email = ? and user_otp = ?', [user_email, user_password], function (err, rows, fields) {
++        if (err) {
++            console.log(err);
++        } else {
++            callback(rows);
++        }
++    });
++};
++
+ exports.checkUserStatus = function (user_email, callback) {
+     connection.query('SELECT user_account_status from halo_user where user_email = ?', [user_email], function (err, rows, fields) {
+         if (err) {
+@@ -144,7 +163,6 @@
+  ** Description         : This function update the user status and user password 
+  ********************************************************************************/
+ 
+-
+ exports.updatePasswordWithOtp = function (updatedata, user_id, callback) {
+     connection.query('UPDATE halo_user SET ?  WHERE user_id = ?', [updatedata, user_id], function (err, result) {
+         if (err) {
+@@ -176,7 +194,23 @@
+  ** Description         : This function update the user status to 1 
+  ********************************************************************************/
+ 
+-exports.activeUserStatus = function (user_email, callback) {
++exports.activeUserStatus = function (token, callback) {
++    connection.query('UPDATE halo_user SET user_account_status = ? where user_token = ?', ["1", token], function (err, result) {
++        if (err) {
++            console.log(err);
++        } else {
++            callback(result);
++        }
++
++    });
++};
++
++/********************************************************************************
++ ** Function            : activeUserAccount
++ ** Description         : This function update the user status to 1 
++ ********************************************************************************/
++
++exports.activeUserAccount = function (user_email, callback) {
+     connection.query('UPDATE halo_user SET user_account_status = ? where user_email = ?', ["1", user_email], function (err, result) {
+         if (err) {
+             console.log(err);
+@@ -248,7 +282,7 @@
+             'ON p.permission_givento = d.user_token and p.device_token_fk = h.device_token WHERE d.user_token = ? order by h.network_token ASC';
+     */
+ 
+-   var sql = 'SELECT d.user_token, d.user_role, h.device_name,n.network_token,n.network_name,n.network_id ,h.device_token ,p.permission_givento'+
++   var sql = 'SELECT d.user_token, d.user_role, h.device_name,n.network_token,n.network_name ,n.network_id,h.device_token,h.device_serial_no,h.device_ip,p.permission_givento'+
+              ' FROM halo_user_role_in_network d INNER JOIN halo_device_network n ON n.network_token = d.network_token '+
+              'LEFT JOIN halo_device h ON h.network_token = d.network_token LEFT JOIN halo_device_access_permission p ON p.permission_givento = d.user_token and p.device_token_fk = h.device_token WHERE d.user_token = ?'
+     connection.query(sql, [token], function (err, result) {
+@@ -352,8 +386,6 @@
+  *                        of user_id
+  ********************************************************************************/
+ 
+-
+-
+ exports.getUserTokenUserTable = function (data, callback) {
+     connection.query('SELECT user_token from halo_user where user_id = ? or user_email =?', [data,data], function (err, rows, fields) {
+         if (err) {
+@@ -419,7 +451,6 @@
+     });
+ };
+ 
+-
+ /********************************************************************************
+  ** Function            : insertDeviceAccessPermission
+  ** Description         : This function will return the user_token with the help 
+@@ -428,9 +459,11 @@
+ 
+ 
+ 
+-exports.insertDeviceAccessPermission = function (device_permission_data, callback) {
+-    connection.query('INSERT INTO halo_device_access_permission SET ?', device_permission_data, function (err, result) {
+-        if (err) {
++exports.insertDeviceAccessPermission = function (master_array, callback) {
++    //connection.query('INSERT INTO halo_device_access_permission SET ?', device_permission_data, function (err, result) {
++    var sql = "INSERT INTO halo_device_access_permission (device_token_fk, permission_givento, permission_givenby, created_on, network_token_fk) VALUES ? ";  
++    connection.query(sql, [master_array], function (err,result) {
++    if (err) {
+             console.log(err);
+         } else {
+             callback(result);
+@@ -441,7 +474,7 @@
+ exports.insertToken = function(auth_token,user_id){
+   connection.query('update halo_user SET auth_token = ? where user_id =?' , [auth_token,user_id], function (err,result){
+       if(err){
+-          console.log(connection.query);
++         
+           console.log(err);
+       }
+       else{
+@@ -448,4 +481,17 @@
+           console.log(result);
+       }
+   });  
++};
++
++
++exports.countUserRole = function(user_role,network_token,callback){
++  connection.query('SELECT count(*) as role from halo_user_role_in_network where user_role = ? and network_token =?' , [user_role,network_token], function (err,result){
++      if(err){
++        
++          console.log(err);
++      }
++      else{
++          callback(result);
++      }
++  });  
+ };
+\ No newline at end of file
+Index: nbproject/private/private.xml
+===================================================================
+--- nbproject/private/private.xml	(revision 43)
++++ nbproject/private/private.xml	(working copy)
+@@ -3,11 +3,15 @@
+     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+         <group>
+-            <file>file:/opt/lampp/htdocs/halo_home/package.json</file>
+-            <file>file:/opt/lampp/htdocs/halo_home/app.js</file>
++            <file>file:/opt/lampp/htdocs/halo_home/public/email/otp_halo.html</file>
++            <file>file:/opt/lampp/htdocs/halo_home/controllers/deviceController.js</file>
+             <file>file:/opt/lampp/htdocs/halo_home/controllers/userController.js</file>
+             <file>file:/opt/lampp/htdocs/halo_home/routes/index.js</file>
++            <file>file:/opt/lampp/htdocs/halo_home/common/language.js</file>
++            <file>file:/opt/lampp/htdocs/halo_home/common/lambdarule.js</file>
++            <file>file:/opt/lampp/htdocs/halo_home/config.js</file>
+             <file>file:/opt/lampp/htdocs/halo_home/models/userModel.js</file>
++            <file>file:/opt/lampp/htdocs/halo_home/public/email/user_network_status_halo.html</file>
+             <file>file:/opt/lampp/htdocs/halo_home/common/helper.js</file>
+         </group>
+     </open-files>
+Index: package.json
+===================================================================
+--- package.json	(revision 43)
++++ package.json	(working copy)
+@@ -7,10 +7,12 @@
+     "aws-sdk": "^2.7.10",
+     "base-64": "^0.1.0",
+     "body-parser": "^1.15.2",
++    "email-templates": "^2.5.4",
+     "express": "^4.14.0",
+     "express-session": "^1.14.2",
+     "file-system": "^2.2.1",
+     "formidable": "^1.0.17",
++    "jade": "^1.11.0",
+     "jsonwebtoken": "^7.1.9",
+     "mongodb": "^2.2.11",
+     "mysql": "^2.12.0",
+Index: routes/index.js
+===================================================================
+--- routes/index.js	(revision 43)
++++ routes/index.js	(working copy)
+@@ -16,9 +16,11 @@
+     app.get('/registration-link/:id',user.registrationLink)
+     app.post('/add-user',user.addUser);
+     app.post('/fetch-network',user.fetchNetwork);
+-    app.get('/user-activation',user.userActivation);
++    app.get('/user-activation/:id',user.userActivation);
+     app.post('/logout',user.logout);
+     app.post('/recording-list',device.recordingList);
++    app.post('/check-user-device-registration',device.checkUserDeviceAuthorisation);
++    app.post('/otp-login',user.otpLogin);
+ };
+ 
+ 

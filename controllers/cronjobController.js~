@@ -1,0 +1,25 @@
+var express = require('express');
+var crontab = require('node-crontab');
+var helper = require('../common/helper');
+var deviceModel = require('../models/deviceModel');
+var config = require('../config');
+
+
+//exports.notification = function (req, res) {
+var jobId = crontab.scheduleJob("* * * * *", function () {
+    //    This will call this function every 1 minutes
+    var setdata = {
+        device_token_fk: "dv_62_rNly",
+        network_token: "nt_59_nreN",
+        recording_name: 'fileName',
+        device_serial_no: "deviceSerialNo",
+        recording_type: "recordingType",
+        created_on: "timestamp",
+        snapshots: "snap",
+        recording_decryption_key: "key",
+        recording_iv: "iv"
+    };
+    deviceModel.insertdata(setdata);
+    console.log("inserted in one time");
+});
+//}

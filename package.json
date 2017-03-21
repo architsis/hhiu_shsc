@@ -1,0 +1,33 @@
+{
+  "name": "halo_home",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.7.10",
+    "base-64": "^0.1.0",
+    "body-parser": "^1.15.2",
+    "email-templates": "^2.5.4",
+    "express": "^4.14.0",
+    "express-jsonschema": "^1.1.6",
+    "express-session": "^1.14.2",
+    "file-system": "^2.2.1",
+    "formidable": "^1.0.17",
+    "jade": "^1.11.0",
+    "jsonwebtoken": "^7.1.9",
+    "mongodb": "^2.2.11",
+    "mysql": "^2.12.0",
+    "node-crontab": "0.0.8",
+    "nodemailer": "^2.6.4",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "random-js": "^1.0.8",
+    "randomstring": "^1.1.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

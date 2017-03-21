@@ -1,0 +1,632 @@
+var express = require('express');
+var app = express();
+var userModel = require('../models/userModel');
+var helper = require('../common/helper');
+var nodemailer = require('nodemailer');
+var formidable = require('formidable');
+var deviceModel = require('../models/deviceModel');
+var fs = require('file-system');
+var config = require('../config');
+var jwt = require('jsonwebtoken');
+
+
+/********************************************************************************
+ ** Function            : login
+ ** Description         : With this Api user can login into his/her account
+ ** Input Parameters    : (email,password) or (email,otp)
+ ** Return Values       : status:-{True},data:-{"status":true,
+ *                        "data":{"user_token","user_otp"
+ *                        ,"otp_status" "userName","userPic","token"}
+ *                        stattus:-{false},data:{Email and Password does not match,
+ *                        You are not a member of Halo Network.Please Sign up to continue.}
+ ********************************************************************************/
+
+exports.login = function (req, res) {
+
+    var data = req.body;
+    var user_email = req.body.user_email;
+    var user_password = req.body.user_pwd;
+
+    userModel.validateEmail(user_email, function (emailResponse) {
+        if (emailResponse.length > 0) {
+            userModel.checkUserStatus(user_email, function (userResponse) {
+                if (userResponse[0].user_account_status === 0) {
+                    var status = false;
+                    var message = "Your account is not activated. Please click on the link given in the mail to activate it.";
+                    var result = helper.sendResult(status, message);
+                    res.send(result);
+                } else {
+
+                    userModel.validateLogin(data, function (loginResponse) {
+                        if (loginResponse.length > 0) {
+                            var authToken = helper.generateToken(loginResponse);
+                            var status = true;
+                            var message = {
+                                "user_token": loginResponse[0].user_token,
+                                "user_id": loginResponse[0].user_id,
+                                "user_otp": loginResponse[0].user_otp,
+                                "otp_status": loginResponse[0].otp_status,
+                                "userName": loginResponse[0].user_name,
+                                "userPic": loginResponse[0].user_pic,
+                                "token": authToken
+                            }
+                            var result = helper.sendResult(status, message);
+                            res.send(result);
+                        } else {
+                            var status = false;
+                            var message = "Email and Password does not match";
+                            var result = helper.sendResult(status, message);
+                            res.send(result);
+                        }
+
+                    });
+                }
+            });
+
+        } else {
+            var status = false;
+            var message = "You are not a member of Halo Network.Please Sign up to continue.";
+            var result = helper.sendResult(status, message);
+            res.send(result);
+        }
+    });
+};
+
+
+/********************************************************************************
+ ** Function            : register
+ ** Description         : With this Api user can signup
+ ** Input Parameters    : email,fname,lname,password,pic
+ ** Return Values       : status:-{True or False},data:-{this email_id already exists,{"status":true,"data":{"user_token":"sa_114_KJeR","user_name":"archie","user_pic":"ghh"}}
+ ********************************************************************************/
+
+exports.register = function (req, res) {
+
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+        var user_email = fields.user_email;
+        var user_fname = fields.fname;
+        var user_lname = fields.lname;
+        var user_password = fields.password;
+        var user_pic = files.pic.path;
+        var pic_type = files.pic.type.substring(6);
+        userModel.validateEmail(user_email, function (emailResponse) {
+            if (emailResponse.length > 0) {
+                var status = true;
+                var message = "This email id already exists";
+                var response = helper.sendResult(status, message);
+                res.send(response);
+            } else {
+                var encrypted_passowrd = helper.encrypt(user_password);
+                var date = new Date();
+                var timestamp = date.getTime();
+                var user_role = 'sa';
+                var set_data = {user_first_name: user_fname, user_last_name: user_lname, user_email: user_email, user_password: encrypted_passowrd, user_account_status: 0, user_role: user_role, user_updated_on: timestamp};
+
+                // inserting the user details
+                userModel.insertingDetails(set_data, req, function (callback) {
+                    var string = helper.randomNumber;
+                    var user_id = callback;
+                    var role_token = "hh";
+                    var user_token = role_token + '_' + user_id + '_' + string;
+
+                    fs.rename(user_pic, config.static_path + '/user_image/' + user_token + "." + pic_type, function (err) {
+                        if (err) {
+                            throw err;
+                        } else {
+                            console.log('renamed complete');
+                        }
+                    });
+                    var path = "/user_image/" + user_token + "." + pic_type;
+                    var update_pic = {user_token: user_token, user_pic: path};
+
+                    // updating user detail with the user_token
+                    userModel.updateUserToken(user_id, update_pic, function (result) {
+                        userModel.fetchingDetails(user_id, function (result_details) {
+                            var message = {
+                                "user_token": result_details[0].user_token,
+                                "user_name": result_details[0].user_first_name,
+                                "user_pic": result_details[0].user_pic
+                            };
+                            var encrypted_token = helper.encrypt(user_token);
+                            var link = "http://" + req.get('host') + "/registration-link?token=" + encrypted_token;
+                            var mailoption = helper.options;
+                            var transporter = nodemailer.createTransport(mailoption);
+                            var mailsetting = helper.mailRegister(user_email, link);
+
+                            // sending mail to the user with otp
+                            transporter.sendMail(mailsetting, function (error, info) {
+                                if (error) {
+                                    return console.log(error);
+                                } else {
+                                    var status = true;
+                                    var response = helper.sendResult(status, message);
+                                    res.send(response);
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+
+        });
+    });
+};
+
+
+/* *****************************************************
+ ** Function            : forgotpassword
+ ** Description         : With this Api user can recover his/her password
+ ** Input Parameters    : email
+ ** Return Values       : status:-{True or False},data:-{Mail has been sent to your emailid and this email id doesnt exist}
+ ********************************************************************************/
+exports.forgotPassword = function (req, res) {
+    var user_email = req.body.user_email;
+
+    //to check whether email exits or not
+    userModel.validateEmail(user_email, function (response) {
+        if (response.length > 0) {
+            var date = new Date();
+            var timestamp = date.getTime();
+            var user_otp = helper.randomOtp;
+            var otp_status = "1";
+            var update_data = {user_otp: user_otp, otp_sent_timestamp: timestamp, otp_status: otp_status}
+
+            //update details with otp ,otpstatus,timestamp
+            userModel.insertUpdateData(update_data, user_email, function (callback) {
+                var mailoption = helper.options;
+                var transporter = nodemailer.createTransport(mailoption);
+                var mailsetting = helper.mailForgotPassword(user_email, user_otp);
+
+                // sending mail to the user with otp
+                transporter.sendMail(mailsetting, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        var status = true;
+                        var data = "We've sent a new password to your email address. ";
+                        var response = helper.sendResult(status, data);
+                        res.send(response);
+                    }
+                });
+            });
+        } else {
+            var status = false;
+            var data = "We couldn't find any record of the email address you entered";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+        }
+    });
+};
+
+
+/********************************************************************************
+ ** Function            : resetpassword
+ ** Description         : With this Api user can reset his/her password
+ ** Input Parameters    : user_pwd
+ ** Return Values       : status:-{True or False},data:-{Your password has been reset successfully and Your session has been expired}
+ ********************************************************************************/
+
+exports.resetPassword = function (req, res) {
+
+    var auth_token = req.headers.authorization;
+    var user_id = req.body.user_id;
+    deviceModel.checkTokenExist(auth_token, function (response) {
+        if (response === 0) {
+            var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
+                if (err) {
+                    var status = false;
+                    var data = "Please use a valid auth token";
+                    var response = helper.sendResult(status, data);
+                    res.send(response);
+                } else {
+                    userModel.validateUser(user_id, function (response) {
+
+                        if (response.length > 0) {
+                    var user_pwd = req.body.user_pwd;
+                    var otp_status = "0";
+                            var encrypted_passowrd = helper.encrypt(user_pwd);
+                            var set_data = {user_password: encrypted_passowrd, otp_status: otp_status, user_otp: "0"};
+                    //updating user table with password and otp status
+                            userModel.updatePasswordWithOtp(set_data, user_id, function (callback) {
+                        var status = true;
+                        var data = "Your password has been reset successfully ";
+                        var response = helper.sendResult(status, data);
+                        res.send(response);
+                    });
+                        } else {
+                            var status = true;
+                            var data = "Please enter valid user id.";
+                            var response = helper.sendResult(status, data);
+                            res.send(response);
+
+                }
+            });
+        }
+    });
+        } else {
+            var status = false;
+            var data = "Your session has expired.Please login to continue.";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+             }
+    });
+
+};
+
+/********************************************************************************
+ ** Function            : adduser
+ ** Description         : With this Api SuperAdmin or admin can add users in their network
+ ** Input Parameters    : {"fname":"archie","lname":"sisodia","email":"architssisodia@gmail.com","network_token":"nt_4_8EQM","network_id":"4","role":"a"}
+ ** Return Values       : status:-{True or False},data:-{"An Actvation link has been sent to user's email_id","A new user has been added successfully and activation link has been sent to his/her email id" and Your session has been expired}
+ ********************************************************************************/
+
+exports.addUser = function (req, res) {
+
+    var userId = req.body.user_id;
+    var role = req.body.role;
+    var auth_token = req.headers.authorization;
+    var network_token = req.body.network_token;
+    var network_id = req.body.network_id;
+    var date = new Date();
+    var timestamp = date.getTime();
+
+    deviceModel.checkTokenExist(auth_token, function (response) {
+        if (response === 0) {
+            var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
+                if (err) {
+                    var status = false;
+                    var data = "Please use a valid auth token";
+                    var response = helper.sendResult(status, data);
+                    res.send(response);
+                } else {
+                    var user_email = req.body.email;
+                    //will check whether this user is already added in this network or not if yes
+                    //we only specify its role in role table or if not we have to add user in a user table
+                    //as well as in role table.
+                    userModel.validateEmail(user_email, function (response) {
+                        if (response.length > 0) {
+                            // check network_token already exists or not
+                            userModel.checkNetworkTokenAlreadyExist(network_token, function (response) {
+                                if (response.length > 0) {
+                                    // if nw token exists get user token of the user from user_table
+                                    userModel.getUserToken(user_email, function (response) {
+                                        var user_token = response[0].user_token;
+
+                                        // if both same usertoken and network token exists of the same pattern
+                                        userModel.checkNetworkUser(network_token, user_token, function (response) {
+                                            if (response.length > 0) {
+                                                var status = true;
+                                                var data = "this user is already added in this network";
+                                                var response = helper.sendResult(status, data);
+                                                res.send(response);
+                                            } else {
+
+                                                //if user is already added and its role in user_role table
+                                                var role_already_data = {user_token: user_token, user_role: role, network_token: network_token, user_created_on: timestamp, network_id_fk: network_id};
+                                                userModel.updateUserRole(role_already_data, function (result) {
+                                                    var mailoption = helper.options;
+                                                    var transporter = nodemailer.createTransport(mailoption);
+                                                    var encrypted_token = helper.encrypt(user_token);
+                                                    var encrypted_nw_token = helper.encrypt(network_token);
+                                                    var link = "http://" + req.get('host') + "/user-activation?token=" + encrypted_token + "&nw_token=" + encrypted_nw_token;
+                                                    var mailsetting = helper.mailExistingUser(user_email, link);
+
+                                                    // sending mail to the user with otp
+                                                    transporter.sendMail(mailsetting, function (error, info) {
+                                                        if (error) {
+                                                            return console.log(error);
+                                                        } else {
+                                                            var status = true;
+                                                            var data = "An Actvation link has been sent to user's email_id";
+                                                            var response = helper.sendResult(status, data);
+                                                            res.send(response);
+                                                        }
+                                                    });
+
+                                                });
+
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    var status = false;
+                                    var data = "This network doesnt exist";
+                                    var response = helper.sendResult(status, data);
+                                    res.send(response);
+                                }
+                            });
+                        } else {
+                            
+                            var user_fname = req.body.fname;
+                            var user_lname = req.body.lname;
+                            var random = helper.random;
+
+                            //fetching user token with the help of user_id
+                            userModel.getUserTokenUserTable(userId, function (response) {
+                                var otp = helper.randomOtp;
+
+                                // inserting userinfo in user table
+                                var setdata = {user_first_name: user_fname, user_last_name: user_lname, user_email: user_email, user_account_status: 0, user_updated_on: timestamp, user_otp: otp, user_created_by: response[0].user_token};
+                                userModel.insertingDetails(setdata, req, function (id) {
+                                    var user_id = id;
+                                    var user_role = "hh";
+                                    var user_token = user_role + '_' + user_id + '_' + random;
+                                    var token = {user_token: user_token};
+
+                                    //updating user table with user
+                                    userModel.updateUserToken(user_id, token, function (result) {
+                                        var roledata = {user_token: user_token, user_role: role, network_token: network_token, user_created_on: timestamp, network_id_fk: network_id};
+                                        userModel.updateUserRole(roledata, function (result) {
+                                            var mailoption = helper.options;
+                                            var transporter = nodemailer.createTransport(mailoption);
+                                            var encrypted_token = helper.encrypt(user_token);
+                                            var encrypted_nw_token = helper.encrypt(network_token);
+
+                                            var link = "http://" + req.get('host') + "/user-activation?token=" + encrypted_token + "&nw_token=" + encrypted_nw_token;
+                                            var mailsetting = helper.mailNewUser(user_email, otp, link);
+
+                                            // sending mail to the user with otp
+                                            transporter.sendMail(mailsetting, function (error, info) {
+                                                if (error) {
+                                                    return console.log(error);
+                                                } else {
+                                                    var status = true;
+                                                    var data = "A new user has been added successfully and activation link has been sent to his/her email id";
+                                                    var response = helper.sendResult(status, data);
+                                                    res.send(response);
+                                                }
+                                            });
+
+                                        });
+                                    });
+                                });
+                            });
+                        }
+                        ;
+                    });
+
+                }
+                ;
+            });
+        } else {
+            var status = false;
+            var data = "Your session has expired.Please login to continue.";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+        }
+    });
+
+};
+/********************************************************************************
+ ** Function            : userActivation
+ ** Description         : With this Api user can activate his/her account
+ ** Input Parameters    : user_token
+ ** Return Values       : status:-{True or False},data:-{User account has been activated and "Invalid Response"}
+ ********************************************************************************/
+
+exports.userActivation = function (req, res) {
+    var encrypt_token = req.query.token;
+    var token = helper.decrypt(encrypt_token);
+    var encrypt_nw_token = req.query.nw_token;
+    var nw_token = helper.decrypt(encrypt_nw_token);
+    userModel.checkTokenExist(token, function (result) {
+        var user_token = result[0].user_token;
+        if (user_token) {
+            userModel.activeUserStatus(token, function (result_user) {
+                userModel.activeNetworkStatus(token, nw_token, function (result_network) {
+                    //var status = true;
+                    var data = "Your account has been activated.Please login in the app to continue.";
+                    //var response = helper.sendResult(status, data);
+                    res.send(data);
+
+                });
+            });
+        } else {
+            var status = true;
+            var data = "Invalid Response";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+
+        }
+
+    });
+};
+
+/********************************************************************************
+ ** Function            : fetchNetwork
+ ** Description         : With this Api user can have list of networks with their devices
+ ** Input Parameters    : user_token
+ ** Return Values       : data:-{"device information"}
+ 
+ ********************************************************************************/
+exports.fetchNetwork = function (req, res) {
+
+    var auth_token = req.headers.authorization;
+    var user_id = req.body.user_id;
+    var data = [];
+    var network = [];
+
+    deviceModel.checkTokenExist(auth_token, function (response) {
+        if (response === 0) {
+            var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
+                if (err) {
+                    var status = false;
+                    var data = "Please use a valid auth token";
+                    var response = helper.sendResult(status, data);
+                    res.send(response);
+                } else {
+                    //fetching user_token with the help of user_id
+                    userModel.getUserTokenUserTable(user_id, function (response) {
+
+                        // fetching user role ,network token and network_name from user_role table and network_table
+                        userModel.networkDetailsWithToken(response[0].user_token, function (result) {
+
+                            var master_array = [];
+                            var sub_array = [];
+                            var j = 0;
+                            var k = 0;
+
+                            for (var i = 0; i < result.length; i++) {
+
+                                if ((result[i].user_role === "u") && (result[i].user_token === result[i].permission_givento) || result[i].user_role === "a" || result[i].user_role === "sa") {
+                                    var network_token = result[i].network_token;
+                                    var network_name = result[i].network_name;
+                                    var user_role = result[i].user_role;
+                                    var device_token = result[i].device_token;
+                                    var device_name = result[i].device_name;
+
+                                    for (j = 0; j < master_array.length; j++) {
+
+                                        if (result[i].network_token === master_array[j].network_token) {
+                                            var arr = {
+                                                "device_name": device_name,
+                                                "device_token": device_token
+                                            }
+
+                                            master_array[j].devices.push(arr);
+                                            k++;
+                                            break;
+
+                                        }
+                                        k = 0;
+                                    }
+                                    if (k === 0) {
+                                        sub_array = {
+                                            "network_token": network_token,
+                                            "network_name": network_name,
+                                            "user_role": user_role,
+                                            "devices": [{
+                                                    "device_name": device_name,
+                                                    "device_token": device_token
+
+                                                }],
+                                        };
+
+                                        master_array.push(sub_array);
+
+                                    }
+                                }
+                            }
+
+                            var status = true;
+                            var response = helper.sendResult(status, master_array);
+                            res.send(response);
+                        });
+                    });
+
+                }
+
+            });
+        } else {
+            var status = false;
+            var data = "Your session has expired.Please login to continue.";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+        }
+    });
+
+};
+
+
+exports.fetchUser = function (req, res) {
+
+    var user_details = [];
+    var result = [];
+    var user_id = req.body.user_id;
+//     var auth_token = req.headers.authorization;
+//     deviceModel.check_token_exist(auth_token, function (response) {
+//     if (response == 0) {
+//     var decoded = jwt.verify(auth_token, config.secret, function (err, value) {
+//     if (err) {
+//     var response = helper.send_err(err);
+//     res.send(response);
+//     } else {
+
+    //checking user_exists or not
+
+    userModel.validateUser(user_id, function (response) {
+
+        if (response.length > 0)
+        {
+            //fetching different network in which user is assigned   
+
+            userModel.networkNameWithToken(response[0].user_token, function (result_network) {
+                var data = [];
+                var length = result_network.length;
+                console.log(result_network);
+                // for (var i = 0; i < result_network.length; i++) {
+                for (var j = 0; j < length; j++) {
+                    console.log(j);
+
+                    var network = result_network[j].network_token;
+                    console.log(network)
+                    userModel.user_list(network, function (result) {
+                        console.log(result);
+                        if (result.length > 0)
+                        {
+                            console.log("inside loop", j);
+                            //result_network[i].user = result;
+                            //console.log(result_network[i]);
+                        }
+//
+                    });
+                }
+
+
+            });
+        } else {
+            var status = false;
+            var data = "User doesn't exists";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+        }
+    });
+    //   }
+    // });
+    //    }
+    //  });
+};
+
+
+exports.registrationLink = function (req, res) {
+
+    var encrypt_token = req.query.token;
+    var token = helper.decrypt(encrypt_token);
+    userModel.checkTokenExist(token, function (result) {
+        var user_token = result[0].user_token;
+        if (user_token) {
+            userModel.activeUserStatus(token, function (result_user) {
+                //var status = true;
+                var data = "Your account has been activated.Please login in the app to continue.";
+                //var response = helper.sendResult(status, data);
+                res.send(data);
+            });
+        } else {
+            var status = true;
+            var data = "Invalid Response";
+            var response = helper.sendResult(status, data);
+            res.send(response);
+        }
+
+    });
+
+};
+
+/********************************************************************************
+ ** Function            : logout
+ ** Description         : With this Api user will be logged out from his/her account
+ ** Input Parameters    : auth_token
+ ** Return Values       : Successfully logged out
+ 
+ ********************************************************************************/
+
+exports.logout = function (req, res) {
+    var auth_token = req.headers.authorization;
+    var user_id = req.body.user_id;
+    userModel.insertToken(auth_token, user_id);
+    var status = true;
+    var message = "Successfully logged out";
+    var response = helper.sendResult(status, message);
+    res.send(response);
+};
